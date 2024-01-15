@@ -7,7 +7,7 @@ import java.util.Set;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "sys_role", schema = "voffice", catalog = "")
+@Table(name = "sys_role", schema = "handleFile", catalog = "")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class SysRole {
 

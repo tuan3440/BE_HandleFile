@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "sys_module_action", schema = "voffice", catalog = "")
+@Table(name = "sys_module_action", schema = "handleFile", catalog = "")
 public class SysModuleAction {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

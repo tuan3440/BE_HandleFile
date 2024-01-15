@@ -3,7 +3,7 @@ package com.mycompany.myapp.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "sys_user_role", schema = "voffice", catalog = "")
+@Table(name = "sys_user_role", schema = "handleFile", catalog = "")
 public class SysUserRole {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

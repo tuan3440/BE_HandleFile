@@ -7,7 +7,7 @@ import java.util.Set;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "sys_user", schema = "voffice", catalog = "")
+@Table(name = "sys_user", schema = "handleFile", catalog = "")
 public class SysUser {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

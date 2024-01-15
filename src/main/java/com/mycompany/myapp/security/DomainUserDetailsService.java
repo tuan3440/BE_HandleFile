@@ -51,7 +51,7 @@ public class DomainUserDetailsService implements UserDetailsService {
     }
 
     private org.springframework.security.core.userdetails.User createSpringSecurityUser(String lowercaseLogin, SysUser user) {
-        if (user.getIsActive() == null || user.getIsActive() == 0) {
+        if (user.getStatus() == null || user.getStatus() == 0) {
             throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
         }
         //        List<GrantedAuthority> grantedAuthorities = user

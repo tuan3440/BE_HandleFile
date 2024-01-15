@@ -209,3 +209,5 @@ jhipster:
 # ===================================================================
 
 # application:
+upload:
+  path: "C:\\Users\\SURFACE\\Desktop\\Project\\HandleFile\\files\\"

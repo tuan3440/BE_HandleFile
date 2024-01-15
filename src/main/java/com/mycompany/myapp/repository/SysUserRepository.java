@@ -15,6 +15,8 @@ public interface SysUserRepository extends JpaRepository<SysUser, Long> {
 
     Optional<SysUser> findByIdAndResetKey(long userId, String resetKey);
 
+    Boolean existsSysUserByUserName(@Param("userName") String userName);
+
     @Query(
         value = "select su " +
         " from SysUser su " +

@@ -113,5 +113,21 @@ jhipster:
 # More documentation is available at:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
+application:
+  minio-service:
+    base-url: http://127.0.0.1:9000
+    access-key: BemsHLcVzZUbowgR7YXa
+    secret-key: 7LtvMyTSBKlwhXq66pAW7JEBDxkDdPxN9DXQ7fDy
+    active: 0
 
-# application:
+security:
+  passwordDefault: 123456aA@
+
+
+amazonProperties:
+  endpointUrl: http://127.0.0.1:9000
+  accessKey: BemsHLcVzZUbowgR7YXa
+  secretKey: 7LtvMyTSBKlwhXq66pAW7JEBDxkDdPxN9DXQ7fDy
+  bucketName: be-file
+
+

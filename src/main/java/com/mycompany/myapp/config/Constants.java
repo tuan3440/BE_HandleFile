@@ -15,4 +15,12 @@ public final class Constants {
     public static final Long TIME_REMEMBER = 604800L;
 
     private Constants() {}
+
+    public interface FILE_TYPE {
+        Integer AVATAR = 1;
+    }
+
+    public interface BUCKET_PATH {
+        String AVATAR = "avatar";
+    }
 }
