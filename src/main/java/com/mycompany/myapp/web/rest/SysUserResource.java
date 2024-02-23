@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mycompany.myapp.utils.WordToPdfConverter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,9 +32,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.PaginationUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
@@ -127,8 +130,8 @@ public class SysUserResource {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/exportWithTemplate")
-    public void exportExcelWithTemplate(HttpServletResponse response) throws IOException {
+    @GetMapping("/exportWithTemplateFromS3")
+    public void exportWithTemplateFromS3(HttpServletResponse response) throws IOException {
         sysUserService.export(response);
     }
 
@@ -137,5 +140,20 @@ public class SysUserResource {
     public ResponseEntity<Void> importUser(@RequestParam(value = "fileImport", required = false) MultipartFile fileImport) throws IOException, ParseException {
         sysUserService.importUser(fileImport);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/exportWithTemplateFromResource")
+    public void exportWithTemplateFromResource(HttpServletResponse response) throws IOException {
+        sysUserService.exportExcel();
+    }
+
+    @GetMapping("/exportUserInfo/{id}")
+    public void exportUserInfo(HttpServletResponse response, @PathVariable("id") Long id) throws IOException {
+        sysUserService.exportUserInfo(id);
+    }
+
+    @GetMapping("/convert")
+    public void convert() throws IOException {
+        WordToPdfConverter.convert();
     }
 }

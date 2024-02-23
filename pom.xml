@@ -314,17 +314,53 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>5.0.0</version> <!-- Use the latest version available -->
+            <version>4.1.1</version> <!-- Use the latest version available -->
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>5.0.0</version> <!-- Use the latest version available -->
+            <version>4.1.1</version> <!-- Use the latest version available -->
         </dependency>
 <!--&lt;!&ndash;        easy poi&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.viettel.vts-kit</groupId>-->
+<!--            <artifactId>vts-kit-lib-easy-poi</artifactId>-->
+<!--            <version>1.0.0</version>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>com.viettel.vts-kit</groupId>
-            <artifactId>vts-kit-lib-easy-poi</artifactId>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls-poi</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls-jexcel</artifactId>
+            <version>1.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>ooxml-schemas</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>3.1.0</version> <!-- Use the appropriate version -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.24</version>
+        </dependency>
+<!--        convert word to pdf-->
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose</artifactId>
             <version>1.0.0</version>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->

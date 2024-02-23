@@ -39,4 +39,8 @@ public interface SysUserService {
     void importUser(MultipartFile fileImport) throws IOException, ParseException;
 
     void export(HttpServletResponse response) throws IOException;
+
+    void exportExcel();
+
+    void exportUserInfo(Long id);
 }

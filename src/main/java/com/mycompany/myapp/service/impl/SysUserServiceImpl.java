@@ -13,6 +13,7 @@ import com.mycompany.myapp.service.dto.SysUserDTO;
 import com.mycompany.myapp.service.mapper.SysUserMapper;
 import com.mycompany.myapp.service.model.RequestPasswordModel;
 import com.mycompany.myapp.utils.DataUtil;
+import com.mycompany.myapp.utils.GenerateDocxUtils;
 import com.mycompany.myapp.utils.StringUtil;
 import com.mycompany.myapp.utils.ValidateUtil;
 import com.mycompany.myapp.web.rest.errors.CustomException;
@@ -35,6 +36,9 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.joda.time.DateTime;
+import org.jxls.common.Context;
+import org.jxls.util.JxlsHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -58,18 +62,20 @@ public class SysUserServiceImpl implements SysUserService {
     @Value("${security.passwordDefault}")
     private String passwordDefault;
     private final AmazonClient amazonClient;
+    private final HttpServletResponse response;
 
     SysUserServiceImpl(
         RedisSevice redisSevice,
         SysUserRepository sysUserRepository,
         SysUserMapper sysUserMapper,
         PasswordEncoder passwordEncoder,
-        AmazonClient amazonClient) {
+        AmazonClient amazonClient, HttpServletResponse response) {
         this.redisSevice = redisSevice;
         this.sysUserRepository = sysUserRepository;
         this.sysUserMapper = sysUserMapper;
         this.passwordEncoder = passwordEncoder;
         this.amazonClient = amazonClient;
+        this.response = response;
     }
 
     @Override
@@ -225,62 +231,71 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public void export(HttpServletResponse response) throws IOException {
-        byte[] bytes = this.amazonClient.getFileFromS3("template_export/user/template_user.xlsx");
-        InputStream inputStream = new ByteArrayInputStream(bytes);
-        Workbook workbook = new XSSFWorkbook(inputStream);
-        Sheet sheet = workbook.getSheetAt(0);
         List<SysUser> userDTOList = sysUserRepository.findAll();
-        CellStyle style = workbook.createCellStyle();
-        int rowNum2 = 2;
-        for (SysUser userDTO : userDTOList) {
-            Row row2 = sheet.createRow(rowNum2++);
-            int columnCount = 0;
-            createCell(row2, columnCount++, rowNum2 - 2, style);
-            createCell(row2, columnCount++, userDTO.getUserName(), style);
-            createCell(row2, columnCount++, userDTO.getFullName(), style);
-            if (userDTO.getGender() == 0) {
-                createCell(row2, columnCount++, "Nam", style);
-            } else {
-                createCell(row2, columnCount++, "Nữ", style);
-            }
-            createCell(row2, columnCount++, userDTO.getDateOfBirth(), style);
-            createCell(row2, columnCount++, userDTO.getEmail(), style);
-            createCell(row2, columnCount++, userDTO.getCellphone(), style);
-        }
-//         Set the response headers
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=sample.xlsx");
+        byte[] bytes = this.amazonClient.getFileFromS3("template_export/user/template_export_user.xls");
+        try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            Context context = new Context();
+            context.putVar("users", userDTOList);
+            context.putVar("date", new Date().toString());
+            JxlsHelper.getInstance().processTemplate(inputStream, baos, context);
+            DateTime dt = new DateTime();
+            final String fileName = "ExportUser_" + String.format("%02d%02d%04d_%02d%02d.xls", dt.getDayOfMonth(), dt.getMonthOfYear(), dt.getYear(), dt.getHourOfDay(), dt.getMinuteOfHour());
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName );
+            response.setHeader("Content-Type", "application/vnd.ms-excel");
+            byte[] byteArray = baos.toByteArray();
+            response.setContentLength(byteArray.length);
+            response.getOutputStream().write(byteArray, 0, byteArray.length);
+            response.getOutputStream().flush();
+        } catch (IOException e) {
 
-//         Write the workbook data to the response output stream
-        workbook.write(response.getOutputStream());
-        workbook.close();
+        }
     }
 
-    private void createCell(Row row, int columnCount, Object value, CellStyle style) {
-        Cell cell = row.createCell(columnCount);
-        if (value instanceof Integer) {
-            cell.setCellValue((Integer) value);
-        }
-        else if (value instanceof Long) {
-            cell.setCellValue((Long) value);
-        } else if (value instanceof Boolean) {
-            cell.setCellValue((Boolean) value);
-        } else if (value instanceof Instant) {
-            cell.setCellValue(value.toString());
-        } else if (value instanceof Timestamp) {
-            Timestamp timestamp = new Timestamp(((Timestamp) value).getTime());
+    @Override
+    public void exportExcel() {
+        List<SysUser> userDTOList = sysUserRepository.findAll();
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("templates/report/template_export_user.xls")) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            Context context = new Context();
+            context.putVar("users", userDTOList);
+            context.putVar("date", new Date().toString());
+            JxlsHelper.getInstance().processTemplate(inputStream, baos, context);
+            DateTime dt = new DateTime();
+            final String fileName = "ExportUser_" + String.format("%02d%02d%04d_%02d%02d.xls", dt.getDayOfMonth(), dt.getMonthOfYear(), dt.getYear(), dt.getHourOfDay(), dt.getMinuteOfHour());
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName );
+            response.setHeader("Content-Type", "application/vnd.ms-excel");
+            byte[] byteArray = baos.toByteArray();
+            response.setContentLength(byteArray.length);
+            response.getOutputStream().write(byteArray, 0, byteArray.length);
+            response.getOutputStream().flush();
+        } catch (IOException e) {
 
-            // Create a SimpleDateFormat to format the Timestamp as a String
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        }
+    }
 
-            // Format the Timestamp as a String
-            String formattedTimestamp = dateFormat.format(timestamp);
-            cell.setCellValue(formattedTimestamp);
+    @Override
+    public void exportUserInfo(Long id) {
+        SysUser sysUser = sysUserRepository.getById(id);
+        if (sysUser != null) {
+            try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("templates/report/user_info.docx")) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                Map<String, String> bean = new HashMap<>();
+                bean.put("fullname", sysUser.getFullName());
+                bean.put("gender", sysUser.getGender() == 1 ? "Nam" : "Nữ");
+                bean.put("email", sysUser.getEmail());
+                bean.put("phone", sysUser.getCellphone());
+
+                byte[] byteArray = GenerateDocxUtils.generateDocx(inputStream, bean);
+                response.setContentLength(byteArray.length);
+                response.getOutputStream().write(byteArray, 0, byteArray.length);
+                response.getOutputStream().flush();
+            } catch (IOException e) {
+
+            }
         }
-        else {
-            cell.setCellValue((String) value);
-        }
-        cell.setCellStyle(style);
     }
 
     public static int getNumberOfNonEmptyCells(XSSFSheet sheet, int columnIndex) {
